@@ -4,10 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
+using UnityEngine.Animations;
+using Random = UnityEngine.Random;
+
 
 public class PlayerMovement : MonoBehaviour
 {
 
+    [SerializeField] private Animator _animatorPlayer;
+    [SerializeField] private Health _health;
+    
     private PlayerInput _playerInput;
     private PlayerInputAction _playerInputAction;
     [SerializeField] private float _maxSpeed = 5f;
@@ -32,6 +38,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _shootClock = 0f;
     [SerializeField] private Transform _shootingPoint;
     [SerializeField] private PoolObject _bulletPool;
+    [SerializeField] private Animator _animatorGun;
+
+    [SerializeField] private float _collisionDistance=0.5f;
+    [SerializeField] private LayerMask _collisionMask;
+
+    private int _rollNr=1;
+
+    [SerializeField] private AnimationCurve _rollNrMovementSpeed;
+    [SerializeField] private ChangeSpriteAfterRoll _changeSpriteAfterRoll;
     
     private void Awake()
     {
@@ -52,15 +67,17 @@ public class PlayerMovement : MonoBehaviour
         _shootClock += Time.deltaTime;
         if (_isDashing)
         {
-            
-            transform.Translate(_lastDirectionMoved*(_dashSpeed*Time.deltaTime));
+            var dashDirection = CollisionCheck(_lastDirectionMoved);
+            transform.Translate(dashDirection*(_dashSpeed*Time.deltaTime));
             
             
             _clockDashDuration += Time.deltaTime;
             if (_clockDashDuration > _dashDuration)
             {
                 _isDashing = false;
+                _animatorPlayer.SetBool("Rolling",false);
                 _clockDashDuration = 0f;
+                _changeSpriteAfterRoll.ChangeSprite(_rollNr);
             }
         }
         else
@@ -70,6 +87,11 @@ public class PlayerMovement : MonoBehaviour
             {
                 _shootClock = 0f;
                 Shoot();
+                _animatorGun.SetBool("Shoot",true);
+            }
+            else
+            {
+                _animatorGun.SetBool("Shoot",false);
             }
         }
     }
@@ -89,8 +111,8 @@ public class PlayerMovement : MonoBehaviour
             _currentX = Mathf.Max( _currentX-Time.deltaTime*_deccelerationTimeAmplifirer ,0);
             _currentSpeed = _currentSpeed.normalized *(_decceleration.Evaluate(_currentX) * _maxSpeed);
         }
-        //Debug.Log(_currentSpeed);
-        transform.Translate(_currentSpeed*Time.deltaTime);
+        _currentSpeed = CollisionCheck(_currentSpeed);
+        transform.Translate(_currentSpeed*(Time.deltaTime*_rollNrMovementSpeed.Evaluate(_rollNr)));
     }
 
     private void Dash(InputAction.CallbackContext context)
@@ -99,15 +121,25 @@ public class PlayerMovement : MonoBehaviour
         {
             _dashClock = 0f;
             _isDashing = true;
+            _animatorPlayer.SetBool("Rolling",true);
+            int newNr;
+            do
+            {
+                newNr = Random.Range(1, 6);
+            } while (newNr == _rollNr);
+
+            _rollNr = newNr;
+            
+            Debug.Log(_rollNr);
         }
     }
 
 
     private void Shoot()
     {
-        GameObject bullet = _bulletPool.GetBullet();
+        GameObject bulletGameobject = _bulletPool.GetBullet();
         var position = _shootingPoint.position;
-        bullet.transform.position = position;
+        bulletGameobject.transform.position = position;
         Vector3 mousePos = Input.mousePosition;
         mousePos.z = 5.23f;
  
@@ -117,8 +149,37 @@ public class PlayerMovement : MonoBehaviour
 
         Vector2 direction = (Vector2)(mousePos - position);
         direction = direction.normalized;
-
-        bullet.GetComponent<Bullet>().Direction = direction;
+        Bullet bullet = bulletGameobject.GetComponent<Bullet>();
+        bullet.Direction = direction;
+        bullet.Damage = _rollNr;
     }
-    
+
+    private Vector2 CollisionCheck(Vector2 move)
+    {
+        if (move.x>0 && Physics2D.Raycast(transform.position, Vector2.right, _collisionDistance, _collisionMask))
+        {
+            move.x = 0;
+        }
+        if (move.x<0 && Physics2D.Raycast(transform.position, Vector2.left, _collisionDistance, _collisionMask))
+        {
+            move.x = 0;
+        }
+        if (move.y>0 && Physics2D.Raycast(transform.position, Vector2.up, _collisionDistance, _collisionMask))
+        {
+            move.y = 0;
+        }
+        if (move.y<0 && Physics2D.Raycast(transform.position, Vector2.down, _collisionDistance, _collisionMask))
+        {
+            move.y = 0;
+        }
+
+        return move;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        var position = transform.position;
+        Gizmos.DrawLine(position,(Vector2)position+(Vector2.right*_collisionDistance));
+    }
 }

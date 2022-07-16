@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6901272337059890386}
-  - component: {fileID: 8317726412005134844}
   - component: {fileID: 5813684967269014719}
   m_Layer: 0
   m_Name: Bullet
@@ -28,27 +27,12 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.9055261, y: -0.0068548564, z: -0.07951099}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8032502431543933907}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &8317726412005134844
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4278845052449243028}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.15
 --- !u!114 &5813684967269014719
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63,6 +47,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bulletSpeed: 15
   Direction: {x: 1, y: 0}
+  _damageLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  _radius: 0.1
+  _damage: 3
 --- !u!1 &7633670873004146501
 GameObject:
   m_ObjectHideFlags: 0
@@ -90,6 +79,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0.07951099}
   m_LocalScale: {x: 0.3, y: 0.3, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6901272337059890386}
   m_RootOrder: 0
