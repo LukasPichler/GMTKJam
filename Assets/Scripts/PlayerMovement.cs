@@ -28,17 +28,17 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 _lastDirectionMoved = Vector2.right;
 
 
+    [SerializeField] private float _shootCD=0.3f;
+    [SerializeField] private float _shootClock = 0f;
     [SerializeField] private Transform _shootingPoint;
-    [SerializeField] private GameObject _bullet;
+    [SerializeField] private PoolObject _bulletPool;
     
     private void Awake()
     {
         _playerInput = GetComponent<PlayerInput>();
-
         _playerInputAction = new PlayerInputAction();
         _playerInputAction.Player.Enable();
         _playerInputAction.Player.Dash.performed += Dash;
-        _playerInputAction.Player.Shoot.performed += Shoot;
     }
 
 
@@ -49,6 +49,7 @@ public class PlayerMovement : MonoBehaviour
         Vector2 movement = _playerInputAction.Player.Move.ReadValue<Vector2>();
         
         _dashClock += Time.deltaTime;
+        _shootClock += Time.deltaTime;
         if (_isDashing)
         {
             
@@ -65,6 +66,11 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             Move(movement);
+            if (_shootCD<_shootClock && _playerInputAction.Player.Shoot.ReadValue<float>()>0f)
+            {
+                _shootClock = 0f;
+                Shoot();
+            }
         }
     }
 
@@ -97,9 +103,22 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    private void Shoot(InputAction.CallbackContext context)
+    private void Shoot()
     {
-        Debug.Log("Shoot");
+        GameObject bullet = _bulletPool.GetBullet();
+        var position = _shootingPoint.position;
+        bullet.transform.position = position;
+        Vector3 mousePos = Input.mousePosition;
+        mousePos.z = 5.23f;
+ 
+        Vector3 objectPos = Camera.main.WorldToScreenPoint (transform.position);
+        mousePos.x = mousePos.x - objectPos.x;
+        mousePos.y = mousePos.y - objectPos.y;
+
+        Vector2 direction = (Vector2)(mousePos - position);
+        direction = direction.normalized;
+
+        bullet.GetComponent<Bullet>().Direction = direction;
     }
     
 }

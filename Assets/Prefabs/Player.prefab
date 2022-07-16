@@ -327,7 +327,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _accelerationTimeAmplifirer: 0.8
+  _accelerationTimeAmplifirer: 0.7
   _decceleration:
     serializedVersion: 2
     m_Curve:
@@ -356,8 +356,8 @@ MonoBehaviour:
   _dashCD: 1
   _dashSpeed: 20
   _dashDuration: 0.3
-  _shootingPoint: {fileID: 0}
-  _bullet: {fileID: 0}
+  _shootingPoint: {fileID: 9146687325539324735}
+  _bulletPool: {fileID: 0}
 --- !u!114 &5066638281464963160
 MonoBehaviour:
   m_ObjectHideFlags: 0
