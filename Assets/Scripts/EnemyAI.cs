@@ -16,10 +16,16 @@ namespace GameJam.Enemies
         [SerializeField] private Transform[] patrolPoints;
         [SerializeField] private float waitTimeAtPoint;
         [SerializeField] private float distanceTolerance;
+        [SerializeField] private Health _health;
+        [SerializeField] private PoolObject _pool;
+        
+        [SerializeField] private float _collisionDistance=0.5f;
+        [SerializeField] private LayerMask _collisionMask;
         
         private int currentPatrolPointIndex;
         private bool hasWaitedAtPoint = false;
 
+        private bool _alive=true;
 
         [System.Serializable]
         public enum EnemyType
@@ -31,21 +37,39 @@ namespace GameJam.Enemies
 
         #region Basic Unity Methods
 
+        private void Awake()
+        {
+            _health.SubscribeToDeath(OnDeath);
+        }
+
+        private void OnDisable()
+        {
+            _health.UnSubscribeToDeath(OnDeath);
+        }
+
+        private void OnEnable()
+        {
+            _health.SubscribeToDeath(OnDeath);
+        }
+
         private void Update()
         {
-            if (enemyType == EnemyType.Following)
+            if (_alive)
             {
-                FollowPlayer();
-            }
+                if (enemyType == EnemyType.Following)
+                {
+                    FollowPlayer();
+                }
 
-            if (enemyType == EnemyType.Shooting)
-            {
-                RetreatAndShoot();
-            }
-            
-            if (enemyType == EnemyType.Patroling)
-            {
-                Patrol();
+                if (enemyType == EnemyType.Shooting)
+                {
+                    RetreatAndShoot();
+                }
+
+                if (enemyType == EnemyType.Patroling)
+                {
+                    Patrol();
+                }
             }
         }
 
@@ -85,12 +109,17 @@ namespace GameJam.Enemies
         {
             if (Time.time > nextShotTime)
             {
-                Instantiate(projectile, transform.position, Quaternion.identity);
+                GameObject bulletGameobject = _pool.GetBullet();
+                bulletGameobject.transform.position = transform.position;
+                bulletGameobject.GetComponent<Bullet>().Direction = (playerTarget.position - transform.position).normalized;
                 nextShotTime = Time.time + timeBetweenShots;
             }
             if (Vector2.Distance(transform.position, playerTarget.position) < minDistanceUntilAttack)
             {
-                transform.position = Vector2.MoveTowards(transform.position, playerTarget.position, -speed * Time.deltaTime);
+                Vector2 _direction = (transform.position - playerTarget.position).normalized;
+                //transform.position = Vector2.MoveTowards(transform.position, playerTarget.position, -speed * Time.deltaTime);
+                _direction = CollisionCheck(_direction);
+                transform.Translate(_direction*(speed*Time.deltaTime));
             }
         }
 
@@ -108,7 +137,36 @@ namespace GameJam.Enemies
 
         #endregion
 
+
+        private void OnDeath()
+        {
+            _alive = false;
+        }
+        
+        private Vector2 CollisionCheck(Vector2 move)
+        {
+            if (move.x>0 && Physics2D.Raycast(transform.position, Vector2.right, _collisionDistance, _collisionMask))
+            {
+                move.x = 0;
+            }
+            if (move.x<0 && Physics2D.Raycast(transform.position, Vector2.left, _collisionDistance, _collisionMask))
+            {
+                move.x = 0;
+            }
+            if (move.y>0 && Physics2D.Raycast(transform.position, Vector2.up, _collisionDistance, _collisionMask))
+            {
+                move.y = 0;
+            }
+            if (move.y<0 && Physics2D.Raycast(transform.position, Vector2.down, _collisionDistance, _collisionMask))
+            {
+                move.y = 0;
+            }
+
+            return move;
+        }
         
     }
+    
+   
 
 }

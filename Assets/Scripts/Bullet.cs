@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -10,6 +11,7 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float _bulletSpeed = 6f;
     public Vector2 Direction=Vector2.right;
     [SerializeField] private LayerMask _damageLayer;
+    [SerializeField] private LayerMask _collisionMask;
     [SerializeField] private float _radius=1f;
     [SerializeField] public int Damage = 3;
    
@@ -25,11 +27,10 @@ public class Bullet : MonoBehaviour
         {
             hit.collider.gameObject.GetComponentInParent<Health>().TakeDamage(Damage);
             
-            
             gameObject.SetActive(false); 
             
         }else
-        if (Physics2D.CircleCast(transform.position, _radius,Vector3.back))
+        if (Physics2D.CircleCast(transform.position, _radius, Vector3.back, Mathf.Infinity, _collisionMask))
         {
             gameObject.SetActive(false); 
         }

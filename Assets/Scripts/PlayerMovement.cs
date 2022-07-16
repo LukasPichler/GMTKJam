@@ -39,7 +39,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform _shootingPoint;
     [SerializeField] private PoolObject _bulletPool;
     [SerializeField] private Animator _animatorGun;
-
+    [SerializeField] private AnimationCurve _sizeOfBulletNR;
+    
     [SerializeField] private float _collisionDistance=0.5f;
     [SerializeField] private LayerMask _collisionMask;
 
@@ -47,6 +48,8 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private AnimationCurve _rollNrMovementSpeed;
     [SerializeField] private ChangeSpriteAfterRoll _changeSpriteAfterRoll;
+    [SerializeField] private Transform _gun;
+    [SerializeField] private AnimationCurve _sizeOfGunAfterRoll;
     
     private void Awake()
     {
@@ -54,8 +57,24 @@ public class PlayerMovement : MonoBehaviour
         _playerInputAction = new PlayerInputAction();
         _playerInputAction.Player.Enable();
         _playerInputAction.Player.Dash.performed += Dash;
+        _health.SubscribeToTookDamage(TakeDamage);
+        _health.SubscribeToDeath(Death);
+        _health.SubscribeToVincible(TakeDamageAgain);
     }
 
+    private void OnEnable()
+    {
+        _health.SubscribeToTookDamage(TakeDamage);
+        _health.SubscribeToDeath(Death);
+        _health.SubscribeToVincible(TakeDamageAgain);
+    }
+
+    private void OnDisable()
+    {
+        _health.UnSubscribeToTookDamage(TakeDamage);
+        _health.UnSubscribeToDeath(Death);
+        _health.UnSubscribeToVincible(TakeDamageAgain);
+    }
 
     private void Update()
     {
@@ -130,7 +149,6 @@ public class PlayerMovement : MonoBehaviour
 
             _rollNr = newNr;
             
-            Debug.Log(_rollNr);
         }
     }
 
@@ -143,12 +161,14 @@ public class PlayerMovement : MonoBehaviour
         Vector3 mousePos = Input.mousePosition;
         mousePos.z = 5.23f;
  
-        Vector3 objectPos = Camera.main.WorldToScreenPoint (transform.position);
+        Vector3 objectPos = Camera.main.WorldToScreenPoint (position);
         mousePos.x = mousePos.x - objectPos.x;
         mousePos.y = mousePos.y - objectPos.y;
 
         Vector2 direction = (Vector2)(mousePos - position);
         direction = direction.normalized;
+        bulletGameobject.transform.localScale = Vector3.one*_sizeOfBulletNR.Evaluate(_rollNr);
+        _gun.localScale = Vector3.one * _sizeOfGunAfterRoll.Evaluate(_rollNr);
         Bullet bullet = bulletGameobject.GetComponent<Bullet>();
         bullet.Direction = direction;
         bullet.Damage = _rollNr;
@@ -176,6 +196,22 @@ public class PlayerMovement : MonoBehaviour
         return move;
     }
 
+    private void TakeDamage()
+    {
+        _animatorPlayer.SetBool("Hurt",true);
+    }
+
+    private void TakeDamageAgain()
+    {
+        _animatorPlayer.SetBool("Hurt",false);
+    }
+    
+    private void Death()
+    {
+        _animatorPlayer.SetBool("Dead",true);
+        this.enabled = false;
+    }
+    
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;

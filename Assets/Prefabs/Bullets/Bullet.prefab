@@ -50,8 +50,11 @@ MonoBehaviour:
   _damageLayer:
     serializedVersion: 2
     m_Bits: 128
+  _collisionMask:
+    serializedVersion: 2
+    m_Bits: 384
   _radius: 0.1
-  _damage: 3
+  Damage: 3
 --- !u!1 &7633670873004146501
 GameObject:
   m_ObjectHideFlags: 0
