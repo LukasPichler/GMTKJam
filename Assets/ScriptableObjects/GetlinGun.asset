@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98be83a2d549abf4c8701e60507250d5, type: 3}
+  m_Name: GetlinGun
+  m_EditorClassIdentifier: 
+  ShootCD: 0.15
+  Gun: {fileID: 411226818579892846, guid: cb34fec9cd00aac4d96db65887a609ad, type: 3}
+  Bullet: {fileID: 4278845052449243028, guid: b0f3daac7a93a334290d6ff50b0be8cb, type: 3}
+  AudioClip: {fileID: 8300000, guid: c5c8cd9aefe6daf49afe9f7ec5f6063d, type: 3}

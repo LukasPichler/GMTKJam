@@ -6,11 +6,24 @@ using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using UnityEngine.Animations;
 using Random = UnityEngine.Random;
-
+using TMPro;
 
 public class PlayerMovement : MonoBehaviour
 {
 
+    [SerializeField] private TextMeshPro _text;
+    
+    [SerializeField] private List<GunObject> _guns;
+    [SerializeField] private Transform _gunParent;
+    private GameObject _currentGun;
+    private GunObject _currentGunObject;
+    private Transform _shootingPoint;
+    private AudioPlay _audioPlay;
+    [SerializeField] private RotateTowardsMouse _rotateTowards;
+    private Action _rollAction;
+    private Action _stopRollAction;
+    private int _magazineSize;
+    
     [SerializeField] private Animator _animatorPlayer;
     [SerializeField] private Health _health;
     
@@ -36,23 +49,19 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private float _shootCD=0.3f;
     [SerializeField] private float _shootClock = 0f;
-    [SerializeField] private Transform _shootingPoint;
-    [SerializeField] private PoolObject _bulletPool;
     [SerializeField] private Animator _animatorGun;
-    [SerializeField] private AnimationCurve _sizeOfBulletNR;
     
     [SerializeField] private float _collisionDistance=0.5f;
     [SerializeField] private LayerMask _collisionMask;
 
     private int _rollNr=1;
 
-    [SerializeField] private AnimationCurve _rollNrMovementSpeed;
     [SerializeField] private ChangeSpriteAfterRoll _changeSpriteAfterRoll;
-    [SerializeField] private Transform _gun;
-    [SerializeField] private AnimationCurve _sizeOfGunAfterRoll;
     
     private void Awake()
     {
+        LoadGun(_rollNr);
+        
         _playerInput = GetComponent<PlayerInput>();
         _playerInputAction = new PlayerInputAction();
         _playerInputAction.Player.Enable();
@@ -78,7 +87,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        
+        _text.text = _magazineSize.ToString();
         
         Vector2 movement = _playerInputAction.Player.Move.ReadValue<Vector2>();
         
@@ -94,15 +103,17 @@ public class PlayerMovement : MonoBehaviour
             if (_clockDashDuration > _dashDuration)
             {
                 _isDashing = false;
+                _stopRollAction?.Invoke();
                 _animatorPlayer.SetBool("Rolling",false);
                 _clockDashDuration = 0f;
                 _changeSpriteAfterRoll.ChangeSprite(_rollNr);
+                LoadGun(_rollNr);
             }
         }
         else
         {
             Move(movement);
-            if (_shootCD<_shootClock && _playerInputAction.Player.Shoot.ReadValue<float>()>0f)
+            if (_magazineSize >0 && _shootCD<_shootClock && _playerInputAction.Player.Shoot.ReadValue<float>()>0f)
             {
                 _shootClock = 0f;
                 Shoot();
@@ -131,7 +142,7 @@ public class PlayerMovement : MonoBehaviour
             _currentSpeed = _currentSpeed.normalized *(_decceleration.Evaluate(_currentX) * _maxSpeed);
         }
         _currentSpeed = CollisionCheck(_currentSpeed);
-        transform.Translate(_currentSpeed*(Time.deltaTime*_rollNrMovementSpeed.Evaluate(_rollNr)));
+        transform.Translate(_currentSpeed*(Time.deltaTime));
     }
 
     private void Dash(InputAction.CallbackContext context)
@@ -141,10 +152,11 @@ public class PlayerMovement : MonoBehaviour
             _dashClock = 0f;
             _isDashing = true;
             _animatorPlayer.SetBool("Rolling",true);
+            _rollAction?.Invoke();
             int newNr;
             do
             {
-                newNr = Random.Range(1, 6);
+                newNr = Random.Range(1, 7);
             } while (newNr == _rollNr);
 
             _rollNr = newNr;
@@ -155,23 +167,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void Shoot()
     {
-        GameObject bulletGameobject = _bulletPool.GetBullet();
-        var position = _shootingPoint.position;
-        bulletGameobject.transform.position = position;
-        Vector3 mousePos = Input.mousePosition;
+        
+        
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 5.23f;
- 
-        Vector3 objectPos = Camera.main.WorldToScreenPoint (position);
-        mousePos.x = mousePos.x - objectPos.x;
-        mousePos.y = mousePos.y - objectPos.y;
+        _currentGunObject.Shoot(mousePos,_shootingPoint.position,_audioPlay);
+        _magazineSize--;
 
-        Vector2 direction = (Vector2)(mousePos - position);
-        direction = direction.normalized;
-        bulletGameobject.transform.localScale = Vector3.one*_sizeOfBulletNR.Evaluate(_rollNr);
-        _gun.localScale = Vector3.one * _sizeOfGunAfterRoll.Evaluate(_rollNr);
-        Bullet bullet = bulletGameobject.GetComponent<Bullet>();
-        bullet.Direction = direction;
-        bullet.Damage = _rollNr;
+
     }
 
     private Vector2 CollisionCheck(Vector2 move)
@@ -211,6 +214,44 @@ public class PlayerMovement : MonoBehaviour
         _animatorPlayer.SetBool("Dead",true);
         this.enabled = false;
     }
+
+    private void LoadGun(int nr)
+    {
+        GunObject gunObject = _guns[nr-1];
+        if (_currentGun != null)
+        {
+            Destroy(_currentGun);
+        }
+        _currentGun = Instantiate(gunObject.Gun, _gunParent);
+        _rotateTowards.Gun = _currentGun.transform;
+        _shootCD = gunObject.ShootCD;
+        _animatorGun = _currentGun.GetComponentInChildren<Animator>();
+        _currentGunObject = gunObject;
+        _shootingPoint = _currentGun.transform.GetChild(0).GetChild(1);
+        _audioPlay = _currentGun.GetComponent<AudioPlay>();
+        _shootClock = 10f;
+        _magazineSize = gunObject.bullets;
+
+    }
+
+    public void SubscribeRoll(System.Action call)
+    {
+        _rollAction += call;
+    }
+    public void UnSubscribeRoll(System.Action call)
+    {
+        _rollAction -= call;
+    }
+    
+    public void SubscribeStopRoll(System.Action call)
+    {
+        _stopRollAction += call;
+    }
+    public void UnSubscribeStopRoll(System.Action call)
+    {
+        _stopRollAction -= call;
+    }
+    
     
     private void OnDrawGizmos()
     {

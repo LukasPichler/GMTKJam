@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 
 public class RotateTowardsMouse : MonoBehaviour
 {
-    [SerializeField] private Transform _gun;
+    [SerializeField] public Transform Gun;
 
     [SerializeField] private Transform _playerModelTrans;
     
@@ -30,7 +30,7 @@ public class RotateTowardsMouse : MonoBehaviour
         _leftside = angle > -90f && angle < 90f;
 
         Vector3 scaleOfPlayerModel = _playerModelTrans.localScale;
-        Vector3 scaleOfGun = _gun.localScale;
+        Vector3 scaleOfGun = Gun.localScale;
         if (_leftside)
         {
             scaleOfPlayerModel = new Vector3(Mathf.Abs(scaleOfPlayerModel.x), scaleOfPlayerModel.y,
@@ -47,7 +47,7 @@ public class RotateTowardsMouse : MonoBehaviour
         }
         
         _playerModelTrans.localScale = scaleOfPlayerModel;
-        _gun.localScale = scaleOfGun;
-        _gun.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+        Gun.localScale = scaleOfGun;
+        Gun.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
     }
 }

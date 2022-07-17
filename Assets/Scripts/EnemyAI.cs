@@ -8,7 +8,7 @@ namespace GameJam.Enemies
     {
         [SerializeField] private EnemyType enemyType;
         [SerializeField] private float speed;
-        [SerializeField] private Transform playerTarget;
+        [SerializeField] public Transform playerTarget;
         [SerializeField] private float minDistanceUntilAttack;
         [SerializeField] private GameObject projectile;
         [SerializeField] private float timeBetweenShots;
@@ -17,7 +17,7 @@ namespace GameJam.Enemies
         [SerializeField] private float waitTimeAtPoint;
         [SerializeField] private float distanceTolerance;
         [SerializeField] private Health _health;
-        [SerializeField] private PoolObject _pool;
+        [SerializeField] private GameObject _bullet;
         
         [SerializeField] private float _collisionDistance=0.5f;
         [SerializeField] private LayerMask _collisionMask;
@@ -109,7 +109,7 @@ namespace GameJam.Enemies
         {
             if (Time.time > nextShotTime)
             {
-                GameObject bulletGameobject = _pool.GetBullet();
+                GameObject bulletGameobject = Instantiate(_bullet);
                 bulletGameobject.transform.position = transform.position;
                 bulletGameobject.GetComponent<Bullet>().Direction = (playerTarget.position - transform.position).normalized;
                 nextShotTime = Time.time + timeBetweenShots;

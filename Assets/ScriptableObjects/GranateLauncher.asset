@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98be83a2d549abf4c8701e60507250d5, type: 3}
+  m_Name: GranateLauncher
+  m_EditorClassIdentifier: 
+  ShootCD: 3
+  Gun: {fileID: 411226818579892846, guid: a4b27e8c87d0dfe4194832d6f4f57891, type: 3}
+  Bullet: {fileID: 7185895001569663329, guid: 43ff507c9f25a9e43882746b2e4213c2, type: 3}
+  AudioClip: {fileID: 8300000, guid: c5a3fb14f0355204aa9f5acd51c0630c, type: 3}
