@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -34,8 +33,10 @@ public class Bullet : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         transform.Translate(Direction*(_bulletSpeed*Time.deltaTime));
-
+        
+        
         _clockLifeTime += Time.deltaTime;
 
         if (_clockLifeTime > _lifeTime)
@@ -48,7 +49,7 @@ public class Bullet : MonoBehaviour
         RaycastHit2D hit = Physics2D.CircleCast(transform.position, _radius, Vector3.back, Mathf.Infinity, _damageLayer);
         if (hit)
         {
-            hit.collider.gameObject.GetComponentInParent<Health>().TakeDamage(Damage);
+            hit.collider.gameObject.GetComponentInParent<Health>()?.TakeDamage(Damage);
             destruction?.Invoke();
             Destroy(gameObject);
             
@@ -62,4 +63,9 @@ public class Bullet : MonoBehaviour
     }
 
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(transform.position,_radius);
+    }
 }

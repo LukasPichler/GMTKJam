@@ -16,3 +16,4 @@ MonoBehaviour:
   Gun: {fileID: 411226818579892846, guid: cb34fec9cd00aac4d96db65887a609ad, type: 3}
   Bullet: {fileID: 4278845052449243028, guid: 4b4d43074f76ab54aa7a490dc40cbd9d, type: 3}
   AudioClip: {fileID: 8300000, guid: c5c8cd9aefe6daf49afe9f7ec5f6063d, type: 3}
+  bullets: 4

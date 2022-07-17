@@ -16,10 +16,10 @@ public class GunObject : ScriptableObject
     {
         audioPlayer.Clip = AudioClip;
         audioPlayer.Play();
-        GameObject bulletObject = Instantiate(Bullet);
-        bulletObject.transform.position = shootingPoint;
+        Vector2 direction = (target - shootingPoint).normalized;
+        GameObject bulletObject = Instantiate(Bullet,shootingPoint,Quaternion.identity);
         Bullet bullet = bulletObject.GetComponent<Bullet>();
-        bullet.Direction = (target - shootingPoint).normalized;
+        bullet.Direction = direction;
     }
 
 }

@@ -146,8 +146,8 @@ MonoBehaviour:
   _source: {fileID: 2860300793461313077}
   _maxPicth: 1
   _minPicth: 0.8
-  _maxVolume: 0.7
-  _minVolume: 0.5
+  _maxVolume: 0.46
+  _minVolume: 0.32
 --- !u!1 &2479402508863197798
 GameObject:
   m_ObjectHideFlags: 0

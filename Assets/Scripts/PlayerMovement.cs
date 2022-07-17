@@ -11,8 +11,8 @@ using TMPro;
 public class PlayerMovement : MonoBehaviour
 {
 
-    [SerializeField] private TextMeshPro _text;
-    
+    [SerializeField] private TextMeshProUGUI _text;
+    [SerializeField] private AudioSource _audioSource;
     [SerializeField] private List<GunObject> _guns;
     [SerializeField] private Transform _gunParent;
     private GameObject _currentGun;
@@ -149,6 +149,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (_dashClock > _dashCD)
         {
+            _audioSource.Play();
+            _health.MakeInvurnable(_dashDuration);
             _dashClock = 0f;
             _isDashing = true;
             _animatorPlayer.SetBool("Rolling",true);

@@ -67,7 +67,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4ef1ab00fe23ef41941ce3867a9b46e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _target: {fileID: 0}
+  Target: {fileID: 0}
   _health: {fileID: 367497834}
   _jumpDistance: 3.5
   _damageNear: {fileID: 4706736408346603056}
@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e3fce83bffe32246be8279f96b8c2b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 10
+  _maxHealth: 4
   _healthbar: {fileID: 7045004817583607285}
   _damageImmune: 0
 --- !u!58 &367497836
@@ -343,7 +343,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1246386403
   m_SortingLayer: 1
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: d7eb65cce20075246a8eed8c5fea39d6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

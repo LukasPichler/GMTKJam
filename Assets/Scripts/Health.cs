@@ -13,7 +13,7 @@ public class Health : MonoBehaviour
     [SerializeField] private float _damageImmune=0f;
     private float _clockDamageImmune;
     private bool invincible=false;
-
+    private bool invicibleDahs = false;
     
     private Action _tookDamage;
     private Action _dead;
@@ -65,10 +65,22 @@ public class Health : MonoBehaviour
     {
         _dead -= call;
     }
+
+    public void MakeInvurnable(float seconds)
+    {
+        StartCoroutine(InvurnableForTime(seconds));
+    }
+
+    IEnumerator InvurnableForTime(float time)
+    {
+        invicibleDahs = true;
+        yield return new WaitForSeconds(time);
+        invicibleDahs = false;
+    }
     
     public void TakeDamage(int damage)
     {
-        if (!invincible)
+        if (!invincible && !invicibleDahs)
         {
             int diff = _currentHealth - Mathf.Max(0, _currentHealth - damage);
             if (diff > 0)

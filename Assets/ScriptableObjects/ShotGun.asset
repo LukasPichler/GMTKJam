@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: ShotGun
   m_EditorClassIdentifier: 
   ShootCD: 1
-  Gun: {fileID: 411226818579892846, guid: cb34fec9cd00aac4d96db65887a609ad, type: 3}
+  Gun: {fileID: 411226818579892846, guid: 5860ea99d02a6f049973683050b0827c, type: 3}
   Bullet: {fileID: 4278845052449243028, guid: 0ee2e8312ea893f4f83ad9c5c3e5afaf, type: 3}
   AudioClip: {fileID: 8300000, guid: 47ccde666a97a1441a3b35afa6593993, type: 3}
-  _bulletCount: 6
+  bullets: 2
+  _bulletCount: 7
   _arcOfShot: 30
